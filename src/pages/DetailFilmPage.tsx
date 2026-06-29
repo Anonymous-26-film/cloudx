@@ -1,6 +1,7 @@
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import {
   Star,
   Clock,
@@ -25,12 +26,12 @@ import {
   formatCurrency,
   truncateText,
 } from "../utils/helpers";
-import type { Cast, Crew, Genre } from "../types";
+import type { Cast, Crew, Genre, Movie, TVShow, TMDBResponse } from "../types";
 
 function useFilmDetail(id: number, mediaType: "movie" | "tv") {
   const detailQuery = useQuery({
     queryKey: ["film-detail", mediaType, id],
-    queryFn: () =>
+    queryFn: (): Promise<Movie | TVShow> =>
       mediaType === "movie"
         ? movieService.getDetail(id)
         : tvService.getDetail(id),
@@ -70,7 +71,7 @@ function useFilmDetail(id: number, mediaType: "movie" | "tv") {
 
   const recsQuery = useQuery({
     queryKey: ["film-recs", mediaType, id],
-    queryFn: () =>
+    queryFn: (): Promise<TMDBResponse<Movie | TVShow>> =>
       mediaType === "movie"
         ? movieService.getRecommendations(id)
         : tvService.getRecommendations(id),
@@ -168,10 +169,13 @@ export function DetailFilmPage() {
       <Helmet>
         <title>{title} — PortalHub Cinema</title>
         <meta name="description" content={truncateText(film.overview || "", 160)} />
-        <meta property="og:title" content={title} />
-        <meta property="og:description" content={truncateText(film.overview || "", 200)} />
-        {posterUrl && <meta property="og:image" content={posterUrl} />}
       </Helmet>
+      <OgMeta
+        title={`${title} — PortalHub Cinema`}
+        description={truncateText(film.overview || "", 200)}
+        image={posterUrl || undefined}
+        type="article"
+      />
 
       {/* Hero Backdrop Section */}
       <div className="relative w-full" style={{ minHeight: "50vw", maxHeight: "70vh" }}>

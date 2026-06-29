@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import {
   ExternalLink, Users, ChevronLeft,
@@ -58,6 +59,10 @@ export function PluginDetailPage() {
         <title>{plugin.name} — PortalHub</title>
         <meta name="description" content={plugin.description} />
       </Helmet>
+      <OgMeta
+        title={`${plugin.name} — PortalHub`}
+        description={plugin.description}
+      />
 
       <div className="min-h-screen pt-20 pb-12">
         <div className="max-w-6xl mx-auto px-4 md:px-8">

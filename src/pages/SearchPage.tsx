@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import { MovieCard } from "../components/MovieCard";
 import { SkeletonGrid } from "../components/SkeletonCard";
@@ -48,6 +49,10 @@ export function SearchPage() {
         <title>{query ? `Search: "${query}"` : "Search"} — PortalHub</title>
         <meta name="description" content="Search movies and TV shows on PortalHub" />
       </Helmet>
+      <OgMeta
+        title={query ? `Search: "${query}"` : "Search — PortalHub"}
+        description={query ? `Search results for "${query}" on PortalHub Cinema` : "Search movies and TV shows on PortalHub Cinema"}
+      />
       <div className="min-h-screen pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="mb-8">

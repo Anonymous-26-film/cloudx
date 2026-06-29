@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import { Home, Search, Film } from "lucide-react";
 
@@ -8,7 +9,12 @@ export function NotFoundPage() {
     <>
       <Helmet>
         <title>404 — Page Not Found — PortalHub Cinema</title>
+        <meta name="description" content="The page you are looking for does not exist or has been moved." />
       </Helmet>
+      <OgMeta
+        title="404 — Page Not Found — PortalHub Cinema"
+        description="The page you are looking for does not exist or has been moved."
+      />
 
       <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
         {/* Background decoration */}

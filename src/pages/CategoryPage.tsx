@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQuery, useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import { MovieCard } from "../components/MovieCard";
 import { PaginationBar } from "../components/PaginationBar";
@@ -91,6 +92,7 @@ function TMDBCategoryPage({ category, title, description }: CategoryPageProps) {
   return (
     <>
       <Helmet><title>{title} — PortalHub</title><meta name="description" content={description} /></Helmet>
+      <OgMeta title={`${title} — PortalHub`} description={description || `Browse ${title} on PortalHub Cinema`} />
       <div className="min-h-screen pt-24 pb-12">
         <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
@@ -162,6 +164,7 @@ function CloudXCategoryPage({ category, title, description }: CategoryPageProps)
   return (
     <>
       <Helmet><title>{title} — PortalHub</title><meta name="description" content={description} /></Helmet>
+      <OgMeta title={`${title} — PortalHub`} description={description || `Browse ${title} on PortalHub Cinema`} />
       <div className="min-h-screen pt-24 pb-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">

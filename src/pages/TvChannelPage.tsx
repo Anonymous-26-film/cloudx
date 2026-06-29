@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -98,6 +99,10 @@ export function TvChannelPage() {
           content="Watch live TV channels from around the world"
         />
       </Helmet>
+      <OgMeta
+        title="TV Channel — PortalHub"
+        description="Watch live TV channels from around the world"
+      />
 
       <div className="min-h-screen pt-24 pb-12">
         <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">

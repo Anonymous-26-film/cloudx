@@ -24,10 +24,6 @@ interface KeywordsResponse {
   keywords?: { id: number; name: string }[];
   results?: { id: number; name: string }[];
 }
-interface KeywordDetailResponse {
-  id: number;
-  name: string;
-}
 interface GenresResponse {
   genres: { id: number; name: string }[];
 }

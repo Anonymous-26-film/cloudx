@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import {
   Search, X, Play, Film,
@@ -19,7 +20,7 @@ import {
   formatRating, formatRuntime,
   getReleaseDate,
 } from "../utils/helpers";
-import type { CloudXPlugin } from "../types";
+import type { CloudXPlugin, Movie, TVShow } from "../types";
 
 export function MovieHubPage() {
   const [searchParams] = useSearchParams();
@@ -39,7 +40,7 @@ export function MovieHubPage() {
   // Fetch detail when playing
   const { data: playingDetail } = useQuery({
     queryKey: ["hub-detail", mediaType, playingMovieId],
-    queryFn: () =>
+    queryFn: (): Promise<Movie | TVShow> =>
       mediaType === "movie"
         ? movieService.getDetail(playingMovieId)
         : tvService.getDetail(playingMovieId),
@@ -122,6 +123,10 @@ export function MovieHubPage() {
         <title>Watch — PortalHub</title>
         <meta name="description" content="Watch movies and TV shows via multiple streaming providers" />
       </Helmet>
+      <OgMeta
+        title="Watch — PortalHub"
+        description="Watch movies and TV shows via multiple streaming providers"
+      />
 
       <div className="min-h-screen pt-16">
         <div className="flex">
@@ -326,9 +331,9 @@ export function MovieHubPage() {
                             <Calendar className="w-3.5 h-3.5" /> {getReleaseDate(playingDetail)}
                           </span>
                         )}
-                        {mediaType === "movie" && playingDetail.runtime && (
+                        {mediaType === "movie" && (playingDetail as Movie).runtime && (
                           <span className="text-sm text-muted-foreground flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" /> {formatRuntime(playingDetail.runtime)}
+                            <Clock className="w-3.5 h-3.5" /> {formatRuntime((playingDetail as Movie).runtime!)}
                           </span>
                         )}
                       </div>

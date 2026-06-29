@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { HeroBanner } from "../components/HeroBanner";
 import { MovieRow } from "../components/MovieRow";
 import { PaginationBar } from "../components/PaginationBar";
@@ -103,9 +104,11 @@ export function HomePage() {
       <Helmet>
         <title>PortalHub Cinema — Your Gateway to Unlimited Entertainment</title>
         <meta name="description" content="Discover and watch trending movies, top-rated films, and popular TV shows. Powered by TMDB API." />
-        <meta property="og:title" content="PortalHub Cinema" />
-        <meta property="og:description" content="Your Gateway to Unlimited Entertainment" />
       </Helmet>
+      <OgMeta
+        title="PortalHub Cinema — Your Gateway to Unlimited Entertainment"
+        description="Discover and watch trending movies, top-rated films, and popular TV shows on PortalHub Cinema. Powered by TMDB API."
+      />
 
       <HeroBanner items={heroItems} isLoading={trendingMovies.isLoading} mediaType="movie" />
 

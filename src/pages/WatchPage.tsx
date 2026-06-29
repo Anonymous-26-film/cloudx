@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import { ExternalLink, ChevronLeft, Film } from "lucide-react";
 import { pluginService } from "../services/pluginService";
@@ -32,7 +33,12 @@ export function WatchPage() {
     <>
       <Helmet>
         <title>Watch — PortalHub</title>
+        <meta name="description" content="Stream movies and TV shows from multiple CloudX streaming providers" />
       </Helmet>
+      <OgMeta
+        title="Watch — PortalHub"
+        description="Stream movies and TV shows from multiple CloudX streaming providers"
+      />
 
       <div className="min-h-screen pt-20 pb-12">
         <div className="max-w-4xl mx-auto px-4 md:px-8">

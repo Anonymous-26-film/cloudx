@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import { Search, X, Film, TrendingUp, Star, Clock, Sparkles } from "lucide-react";
 import { MovieCard } from "../components/MovieCard";
@@ -83,6 +84,10 @@ export function MoviesPage() {
           content="Browse trending, popular, top-rated, and upcoming movies powered by TMDB API"
         />
       </Helmet>
+      <OgMeta
+        title="Movies — PortalHub"
+        description="Browse trending, popular, top-rated, and upcoming movies powered by TMDB API"
+      />
 
       <div className="min-h-screen pt-24 pb-12">
         <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">

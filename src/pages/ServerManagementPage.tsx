@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
 import {
   Server, Activity, XCircle,
@@ -114,6 +115,10 @@ export function ServerManagementPage() {
         <title>Server Management — PortalHub</title>
         <meta name="description" content="Manage and monitor CloudX streaming servers" />
       </Helmet>
+      <OgMeta
+        title="Server Management — PortalHub"
+        description="Manage and monitor CloudX streaming servers"
+      />
 
       <div className="min-h-screen pt-20 pb-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
