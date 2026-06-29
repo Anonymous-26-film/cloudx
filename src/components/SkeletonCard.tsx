@@ -7,11 +7,11 @@ interface SkeletonCardProps {
 
 export function SkeletonCard({ className }: SkeletonCardProps) {
   return (
-    <div className={cn("flex-shrink-0 w-40 sm:w-44 md:w-48", className)}>
+    <div className={cn("flex-shrink-0 w-40 sm:w-44 md:w-52", className)}>
       <Skeleton className="aspect-[2/3] rounded-md w-full" />
       <div className="mt-2 space-y-1.5 px-0.5">
         <Skeleton className="h-3.5 w-4/5 rounded" />
-        <Skeleton className="h-3 w-2/5 rounded" />
+        <Skeleton className="h-2.5 w-2/5 rounded" />
       </div>
     </div>
   );
@@ -21,7 +21,7 @@ export function SkeletonRow() {
   return (
     <div className="mb-8">
       <Skeleton className="h-6 w-48 mb-4 rounded" />
-      <div className="flex gap-3 overflow-hidden">
+      <div className="flex gap-8 overflow-hidden">
         {Array.from({ length: 7 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}

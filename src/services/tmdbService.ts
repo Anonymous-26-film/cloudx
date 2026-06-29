@@ -20,6 +20,14 @@ interface CreditsResponse {
   cast: { id: number; name: string; character: string; profile_path: string | null; order: number }[];
   crew: { id: number; name: string; job: string; department: string; profile_path: string | null }[];
 }
+interface KeywordsResponse {
+  keywords?: { id: number; name: string }[];
+  results?: { id: number; name: string }[];
+}
+interface KeywordDetailResponse {
+  id: number;
+  name: string;
+}
 interface GenresResponse {
   genres: { id: number; name: string }[];
 }
@@ -57,6 +65,8 @@ export const movieService = {
     tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.SEARCH_MOVIE, { params: { query, page } }),
   getGenres: () =>
     tmdbClient.get<GenresResponse>(ENDPOINTS.MOVIE_GENRES),
+  getKeywords: (id: number) =>
+    tmdbClient.get<KeywordsResponse>(ENDPOINTS.MOVIE_KEYWORDS(id)),
   discoverAnime: (page = 1) =>
     tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.DISCOVER_MOVIE, {
       params: { page, with_keywords: "210024", sort_by: "popularity.desc", with_original_language: "ja" },
@@ -87,6 +97,8 @@ export const tvService = {
     tmdbClient.get<TMDBResponse<TVShow>>(ENDPOINTS.SEARCH_TV, { params: { query, page } }),
   getGenres: () =>
     tmdbClient.get<GenresResponse>(ENDPOINTS.TV_GENRES),
+  getKeywords: (id: number) =>
+    tmdbClient.get<KeywordsResponse>(ENDPOINTS.TV_KEYWORDS(id)),
 };
 
 // ── Search / Trending All ──

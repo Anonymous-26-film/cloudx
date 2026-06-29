@@ -98,7 +98,7 @@ export function HeroBanner({ items, isLoading = false, mediaType = "movie" }: He
                   <Play className="w-4 h-4 sm:w-5 sm:h-5 fill-black" /> Play
                 </Link>
                 <Link
-                  to={`/${resolvedType}/${current.id}`}
+                  to={`/detailfilm?id=${current.id}&type=${resolvedType}`}
                   className="flex items-center gap-2 bg-white/20 text-white font-bold px-6 py-2.5 rounded-md hover:bg-white/30 transition-colors backdrop-blur-sm text-sm sm:text-base"
                 >
                   <Info className="w-4 h-4 sm:w-5 sm:h-5" /> More Info
@@ -129,13 +129,13 @@ export function HeroBanner({ items, isLoading = false, mediaType = "movie" }: He
       )}
 
       {featured.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        <div className="absolute bottom-2 md:bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-20">
           {featured.map((_, i) => (
             <button
               key={i}
               onClick={() => { setCurrentIndex(i); setIsAutoPlaying(false); }}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                i === currentIndex ? "w-6 bg-primary" : "w-1.5 bg-white/40 hover:bg-white/70"
+                i === currentIndex ? "w-6 bg-primary" : "w-1.5 bg-primary/40 hover:bg-primary/70"
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />

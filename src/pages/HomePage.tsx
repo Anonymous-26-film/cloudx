@@ -109,12 +109,12 @@ export function HomePage() {
 
       <HeroBanner items={heroItems} isLoading={trendingMovies.isLoading} mediaType="movie" />
 
-      <div className="relative z-10 -mt-16 md:-mt-24 pb-8">
-        <div className="px-4 md:px-8 lg:px-12">
+      <div className="relative z-10 mt-12 md:mt-16 pb-8">
+        <div className="md:px-8 lg:px-12">
           {sections.map((s, i) => (
             <div key={i}>
               {s.row}
-              <div className="mt-2 mb-8">
+              <div className="mt-4 mb-10 sm:mb-12">
                 {s.pagination}
               </div>
             </div>

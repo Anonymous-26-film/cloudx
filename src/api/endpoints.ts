@@ -46,6 +46,11 @@ export const ENDPOINTS = {
   MOVIE_GENRES: "/genre/movie/list",
   TV_GENRES: "/genre/tv/list",
 
+  // Keywords
+  MOVIE_KEYWORDS: (id: number) => `/movie/${id}/keywords`,
+  TV_KEYWORDS: (id: number) => `/tv/${id}/keywords`,
+  KEYWORD_DETAIL: (id: number) => `/keyword/${id}`,
+
   // Trending All
   TRENDING_ALL: "/trending/all/week",
 
