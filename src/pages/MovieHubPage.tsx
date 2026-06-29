@@ -291,6 +291,17 @@ export function MovieHubPage() {
                         />
                       </div>
                     </div>
+
+                  {/* Adsastera Ads - Load on movie click/play */}
+                  <div className="mt-4 space-y-4">
+                    <script src="https://pl30121265.effectivecpmnetwork.com/8b/d9/5c/8bd95c2266e3658635aecb8e176bad42.js" />
+                    <script async data-cfasync="false" src="https://pl30121266.effectivecpmnetwork.com/1a29d7ab7a5428f502eb4900b165879c/invoke.js" />
+                    <div id="container-1a29d7ab7a5428f502eb4900b165879c" />
+                    <script async data-cfasync="false" src="https://pl30121266.effectivecpmnetwork.com/1a29d7ab7a5428f502eb4900b165879c/invoke.js" />
+                    <div id="container-1a29d7ab7a5428f502eb4900b165879c" />
+                    <script src="https://pl30121274.effectivecpmnetwork.com/cf/4f/4c/cf4f4c51c5621faa743c3615d67b6aac.js" />
+                    <script src="https://pl30121274.effectivecpmnetwork.com/cf/4f/4c/cf4f4c51c5621faa743c3615d67b6aac.js" />
+                  </div>
                 </motion.div>
               )}
 

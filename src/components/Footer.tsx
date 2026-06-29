@@ -10,7 +10,7 @@ const footerLinks = [
       { label: "Home", to: "/" },
       { label: "Servers", to: "/servers" },
       { label: "Movies", to: "/movies" },
-      { label: "TV Channel", to: "/tv-channel" },
+
     ],
   },
   {
@@ -108,16 +108,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} PortalHub Cinema. All rights reserved.
           </p>
           <p className="text-center">
-            Powered by{" "}
-            <a
-              href="https://github.com/Asm0d3usX/CloudX"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary hover:text-primary/80 transition-colors font-medium"
-            >
-              CloudX Repository
-            </a>
-            . For educational purposes only.
+            For educational purposes only.
           </p>
         </div>
       </div>

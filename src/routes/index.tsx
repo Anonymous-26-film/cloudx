@@ -8,7 +8,6 @@ import { CategoryPage } from "../pages/CategoryPage";
 import { PluginDetailPage } from "../pages/PluginDetailPage";
 import { ServerManagementPage } from "../pages/ServerManagementPage";
 import { MovieHubPage } from "../pages/MovieHubPage";
-import { TvChannelPage } from "../pages/TvChannelPage";
 import { MoviesPage } from "../pages/MoviesPage";
 import { DetailFilmPage } from "../pages/DetailFilmPage";
 
@@ -31,7 +30,6 @@ export function AppRoutes() {
         <Route path="/hub" element={<MovieHubPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/category/:category" element={<CategoryRoute />} />
-        <Route path="/tv-channel" element={<TvChannelPage />} />
         <Route path="/movies" element={<MoviesPage />} />
         <Route path="/detailfilm" element={<DetailFilmPage />} />
 
