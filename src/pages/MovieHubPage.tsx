@@ -32,6 +32,9 @@ export function MovieHubPage() {
   const [iframeKey, setIframeKey] = useState(0);
   const [showPreview, setShowPreview] = useState(!playParam);
   const [playingMovieId, setPlayingMovieId] = useState<number>(Number(playParam) || 0);
+  const [serverIconError, setServerIconError] = useState(false);
+
+  useEffect(() => { setServerIconError(false); }, [selectedServer]);
 
   // Fetch detail when playing
   const { data: playingDetail } = useQuery({
@@ -43,6 +46,21 @@ export function MovieHubPage() {
     enabled: playingMovieId > 0,
     staleTime: 10 * 60 * 1000,
   });
+
+  // Fetch YouTube trailer from TMDB when playing
+  const { data: videosData } = useQuery({
+    queryKey: ["hub-videos", mediaType, playingMovieId],
+    queryFn: () =>
+      mediaType === "movie"
+        ? movieService.getVideos(playingMovieId)
+        : tvService.getVideos(playingMovieId),
+    enabled: playingMovieId > 0,
+    staleTime: 10 * 60 * 1000,
+  });
+
+  const trailer = ((videosData as any)?.results || [])
+    .filter((v: any) => v.site === "YouTube" && (v.type === "Trailer" || v.type === "Teaser"))
+    [0];
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -92,8 +110,11 @@ export function MovieHubPage() {
 
   if (pluginsLoading) return <PageLoader />;
 
-  const getEmbedUrl = (movieId: number) =>
-    `https://vidsrc.to/embed/movie/${movieId}`;
+  const getPlayerUrl = (movieId: number) => {
+    if (selectedServer) return `https://vidsrc.to/embed/movie/${movieId}`;
+    if (trailer?.key) return `https://www.youtube.com/embed/${trailer.key}?autoplay=1&rel=0`;
+    return `https://vidsrc.to/embed/movie/${movieId}`;
+  };
 
   return (
     <>
@@ -126,8 +147,18 @@ export function MovieHubPage() {
                 </button>
                 {selectedServer && (
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-7 h-7 rounded-md overflow-hidden bg-background border border-border/30 flex-shrink-0">
-                      {selectedServer.iconUrl && <img src={selectedServer.iconUrl} alt={selectedServer.name} className="w-full h-full object-contain" />}
+                    <div className="w-7 h-7 rounded-md overflow-hidden bg-background border border-border/30 flex-shrink-0 flex items-center justify-center">
+                      {selectedServer.iconUrl && !serverIconError ? (
+                        <img
+                          src={selectedServer.iconUrl}
+                          alt={selectedServer.name}
+                          className="w-full h-full object-contain"
+                          onError={() => setServerIconError(true)}
+                          onLoad={() => setServerIconError(false)}
+                        />
+                      ) : (
+                        <Film className="w-4 h-4 text-muted-foreground" />
+                      )}
                     </div>
                     <span className="text-sm font-semibold text-foreground truncate">{selectedServer.name}</span>
                     <div className={`w-2 h-2 rounded-full ${selectedServer.status === 1 ? "bg-green-500 animate-pulse" : "bg-red-500"}`} />
@@ -236,23 +267,25 @@ export function MovieHubPage() {
                     <button onClick={() => setShowPreview(true)} className="px-3 py-1.5 text-xs rounded-lg bg-secondary text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
                       <Film className="w-3.5 h-3.5" /> Back to Movies
                     </button>
-                    {selectedServer && (
+                    {selectedServer ? (
                       <span className="text-xs text-muted-foreground">via {selectedServer.name}</span>
-                    )}
+                    ) : trailer ? (
+                      <span className="text-xs text-primary font-medium">&#9654; Official Trailer</span>
+                    ) : null}
                   </div>
-                  <div className="relative w-full bg-black rounded-xl overflow-hidden border border-border/30 shadow-2xl">
-                    <div className="w-full" style={{ paddingBottom: "56.25%" }}>
-                      <iframe
-                        key={iframeKey}
-                        src={getEmbedUrl(playingMovieId)}
-                        className="absolute inset-0 w-full h-full"
-                        allowFullScreen
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        style={{ border: "none" }}
-                        title="Video Player"
-                      />
+                    <div className="relative w-full bg-black rounded-xl overflow-hidden border border-border/30 shadow-2xl">
+                      <div className="w-full" style={{ paddingBottom: "56.25%" }}>
+                        <iframe
+                          key={iframeKey}
+                          src={getPlayerUrl(playingMovieId)}
+                          className="absolute inset-0 w-full h-full"
+                          allowFullScreen
+                          allow="autoplay; fullscreen; picture-in-picture"
+                          style={{ border: "none" }}
+                          title={selectedServer ? "Video Player" : "Official Trailer"}
+                        />
+                      </div>
                     </div>
-                  </div>
                 </motion.div>
               )}
 
@@ -264,9 +297,9 @@ export function MovieHubPage() {
                   transition={{ delay: 0.2 }}
                   className="mt-6 p-6 bg-card rounded-xl border border-border/50"
                 >
-                  <div className="flex flex-col md:flex-row gap-6">
+                  <div className="flex flex-row gap-4 md:gap-6">
                     {playingDetail.poster_path && (
-                      <div className="flex-shrink-0 w-32 md:w-40 rounded-lg overflow-hidden border border-border/30">
+                      <div className="flex-shrink-0 w-28 md:w-40 self-center rounded-lg overflow-hidden border border-border/30">
                         <img
                           src={IMAGE_URL(playingDetail.poster_path, "w342")!}
                           alt={getTitle(playingDetail)}
@@ -309,7 +342,7 @@ export function MovieHubPage() {
                         </div>
                       )}
                       {playingDetail.overview && (
-                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                           {playingDetail.overview}
                         </p>
                       )}

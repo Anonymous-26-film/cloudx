@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
@@ -18,6 +19,8 @@ export function PluginDetailPage() {
     queryFn: () => pluginService.getAll(),
     staleTime: 5 * 60 * 1000,
   });
+
+  const [pluginIconError, setPluginIconError] = useState(false);
 
   const plugin = plugins?.find((p) => p.internalName === internalName);
 
@@ -76,11 +79,12 @@ export function PluginDetailPage() {
               {/* Icon */}
               <div className="flex-shrink-0 mx-auto md:mx-0">
                 <div className="w-28 h-28 md:w-36 md:h-36 rounded-2xl overflow-hidden bg-background border border-border/50 shadow-lg flex items-center justify-center">
-                  {plugin.iconUrl ? (
+                  {plugin.iconUrl && !pluginIconError ? (
                     <img
                       src={plugin.iconUrl}
                       alt={plugin.name}
                       className="w-full h-full object-contain p-3"
+                      onError={() => setPluginIconError(true)}
                     />
                   ) : (
                     <Tv className="w-16 h-16 text-muted-foreground" />

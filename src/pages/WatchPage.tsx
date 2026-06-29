@@ -1,13 +1,15 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
-import { ExternalLink, ChevronLeft } from "lucide-react";
+import { ExternalLink, ChevronLeft, Film } from "lucide-react";
 import { pluginService } from "../services/pluginService";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 
 export function WatchPage() {
   const { mediaType } = useParams<{ mediaType: "movie" | "tv" }>();
+  const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
 
   const { data: plugins } = useQuery({
     queryKey: ["plugins", "all"],
@@ -70,11 +72,11 @@ export function WatchPage() {
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 bg-secondary/30 hover:bg-secondary/50 border border-border/50 hover:border-primary/30 rounded-xl p-4 transition-all group"
                 >
-                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-background border border-border/30 flex-shrink-0">
-                    {plugin.iconUrl ? (
-                      <img src={plugin.iconUrl} alt={plugin.name} className="w-full h-full object-contain p-1.5" />
+                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-background border border-border/30 flex-shrink-0 flex items-center justify-center">
+                    {plugin.iconUrl && !imgErrors.has(plugin.internalName) ? (
+                      <img src={plugin.iconUrl} alt={plugin.name} className="w-full h-full object-contain p-1.5" onError={() => setImgErrors(prev => new Set(prev).add(plugin.internalName))} />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-xl">&#x1F4FA;</div>
+                      <Film className="w-5 h-5 text-muted-foreground" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
