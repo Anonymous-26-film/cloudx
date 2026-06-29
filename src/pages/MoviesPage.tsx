@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Search, X, Film, TrendingUp, Star, Clock, Sparkles } from "lucide-react";
 import { MovieCard } from "../components/MovieCard";
 import { SkeletonGrid } from "../components/SkeletonCard";
-import { LoadingSpinner } from "../components/LoadingSpinner";
+
 import { PaginationBar } from "../components/PaginationBar";
 import { movieService } from "../services/tmdbService";
 import type { Movie, TMDBResponse } from "../types";

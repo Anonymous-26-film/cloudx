@@ -85,7 +85,7 @@ export function PaginationBar({
       </button>
 
       {/* Page Numbers */}
-      {pages.map((p, i) => {
+      {pages.map((p) => {
         if (typeof p === "string") {
           return (
             <span
