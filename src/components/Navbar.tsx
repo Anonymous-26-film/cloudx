@@ -6,10 +6,10 @@ import { Search, Menu, X, Film } from "lucide-react";
 const navLinks = [
   { label: "Home", to: "/" },
   { label: "Watch", to: "/hub" },
-  { label: "Servers", to: "/servers" },
-  { label: "Movies", to: "/category/Movie" },
-  { label: "TV Series", to: "/category/TvSeries" },
+  { label: "Movies", to: "/movies" },
+  { label: "TV Channel", to: "/tv-channel" },
   { label: "Anime", to: "/category/Anime" },
+  { label: "Servers", to: "/servers" },
 ];
 
 export function Navbar() {

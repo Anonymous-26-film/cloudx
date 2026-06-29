@@ -9,8 +9,8 @@ const footerLinks = [
     links: [
       { label: "Home", to: "/" },
       { label: "Servers", to: "/servers" },
-      { label: "Movies", to: "/category/Movie" },
-      { label: "TV Series", to: "/category/TvSeries" },
+      { label: "Movies", to: "/movies" },
+      { label: "TV Channel", to: "/tv-channel" },
     ],
   },
   {

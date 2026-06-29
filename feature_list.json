@@ -1,6 +1,6 @@
 {
   "project": "portalhub",
-  "last_updated": "",
+  "last_updated": "2026-06-29",
   "rules": {
     "single_active_feature": true,
     "passing_requires_evidence": true,
@@ -14,8 +14,30 @@
   },
   "features": [
     {
-      "id": "web-001",
+      "id": "portal-001",
       "priority": 1,
+      "area": "navbar",
+      "title": "Perbaiki tata letak navbar + integrasi IPTV & Movies",
+      "user_visible_behavior": "Navbar: Home, Watch, Movies, TV Channel, Anime, Servers. TV Series -> TV Channel dengan IPTV API. Movies dari TMDB env API key.",
+      "status": "passing",
+      "verification": [
+        "TypeScript typecheck lulus (npx tsc --noEmit)",
+        "Vite build sukses",
+        "Navbar order: Home, Watch, Movies, TV Channel, Anime, Servers",
+        "TV Channel page fetches IPTV m3u from iptv-org + hnnyo/cct",
+        "Movies page fetches dari TMDB API key di .env"
+      ],
+      "evidence": [
+        "tsc --noEmit: zero errors",
+        "vite build: success",
+        "New files: TvChannelPage.tsx, MoviesPage.tsx, iptvService.ts",
+        "Modified: Navbar.tsx, routes/index.tsx, Footer.tsx, types/index.ts, .env.example"
+      ],
+      "notes": "Dependensi ditambahkan: hls.js. HLS player dynamically imported untuk code splitting."
+    },
+    {
+      "id": "web-001",
+      "priority": 2,
       "area": "website",
       "title": "Bikin website/blog tutorial STB (Blogger/WordPress)",
       "user_visible_behavior": "Pengunjung bisa buka website dan baca artikel tutorial STB.",
@@ -31,7 +53,7 @@
     },
     {
       "id": "web-002",
-      "priority": 2,
+      "priority": 3,
       "area": "monetization",
       "title": "Pasang iklan AdSterra di website",
       "user_visible_behavior": "Pengunjung melihat banner/native ads di halaman tutorial.",
@@ -47,7 +69,7 @@
     },
     {
       "id": "yt-001",
-      "priority": 3,
+      "priority": 4,
       "area": "youtube",
       "title": "Capai 4.000 jam tayang YouTube untuk monetisasi",
       "user_visible_behavior": "Channel YouTube memenuhi syarat YPP dan bisa apply monetisasi.",
@@ -63,7 +85,7 @@
     },
     {
       "id": "yt-002",
-      "priority": 4,
+      "priority": 5,
       "area": "youtube",
       "title": "Bikin 10 video tutorial STB 8-15 menit",
       "user_visible_behavior": "Channel punya minimal 10 video panjang baru yang SEO-friendly.",

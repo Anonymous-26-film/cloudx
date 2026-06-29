@@ -1,43 +1,102 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useCallback } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { HeroBanner } from "../components/HeroBanner";
 import { MovieRow } from "../components/MovieRow";
+import { PaginationBar } from "../components/PaginationBar";
 import { movieService } from "../services/tmdbService";
 import { tvService } from "../services/tmdbService";
 
-export function HomePage() {
-  const { data: trendingData, isLoading: trendingLoading } = useQuery({
-    queryKey: ["trending", "movies"],
-    queryFn: () => movieService.getTrending(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: popularData, isLoading: popularLoading } = useQuery({
-    queryKey: ["popular", "movies"],
-    queryFn: () => movieService.getPopular(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: topRatedData, isLoading: topRatedLoading } = useQuery({
-    queryKey: ["top-rated", "movies"],
-    queryFn: () => movieService.getTopRated(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: upcomingData, isLoading: upcomingLoading } = useQuery({
-    queryKey: ["upcoming", "movies"],
-    queryFn: () => movieService.getUpcoming(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: tvTrendingData, isLoading: tvTrendingLoading } = useQuery({
-    queryKey: ["trending", "tv"],
-    queryFn: () => tvService.getTrending(),
-    staleTime: 5 * 60 * 1000,
-  });
-  const { data: tvPopularData, isLoading: tvPopularLoading } = useQuery({
-    queryKey: ["popular", "tv"],
-    queryFn: () => tvService.getPopular(),
-    staleTime: 5 * 60 * 1000,
+function usePaginatedSection(
+  key: string,
+  fetcher: (page: number) => Promise<{ page: number; total_pages: number; results: unknown[] }>,
+  staleTime = 5 * 60 * 1000
+) {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["home", key, page],
+    queryFn: () => fetcher(page),
+    placeholderData: keepPreviousData,
+    staleTime,
   });
 
-  const heroItems = trendingData?.results || [];
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  return {
+    page,
+    totalPages: data?.total_pages ?? 0,
+    items: (data?.results as MovieRowItem[]) ?? [],
+    isLoading,
+    handlePageChange,
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MovieRowItem = any;
+
+export function HomePage() {
+  const trendingMovies = usePaginatedSection("trending-movies", (p) => movieService.getTrending(p));
+  const trendingTV = usePaginatedSection("trending-tv", (p) => tvService.getTrending(p));
+  const popularMovies = usePaginatedSection("popular-movies", (p) => movieService.getPopular(p));
+  const popularTV = usePaginatedSection("popular-tv", (p) => tvService.getPopular(p));
+  const topRatedMovies = usePaginatedSection("top-rated-movies", (p) => movieService.getTopRated(p));
+  const upcomingMovies = usePaginatedSection("upcoming-movies", (p) => movieService.getUpcoming(p));
+
+  const heroItems = trendingMovies.items || [];
+
+  const sections = [
+    {
+      row: (
+        <MovieRow title="Trending Movies" items={trendingMovies.items} isLoading={trendingMovies.isLoading} mediaType="movie" viewAllLink="/category/trending-movies" />
+      ),
+      pagination: (
+        <PaginationBar currentPage={trendingMovies.page} totalPages={trendingMovies.totalPages} onPageChange={trendingMovies.handlePageChange} maxVisible={5} />
+      ),
+    },
+    {
+      row: (
+        <MovieRow title="Trending TV Series" items={trendingTV.items} isLoading={trendingTV.isLoading} mediaType="tv" viewAllLink="/category/trending-tv" />
+      ),
+      pagination: (
+        <PaginationBar currentPage={trendingTV.page} totalPages={trendingTV.totalPages} onPageChange={trendingTV.handlePageChange} maxVisible={5} />
+      ),
+    },
+    {
+      row: (
+        <MovieRow title="Popular Movies" items={popularMovies.items} isLoading={popularMovies.isLoading} mediaType="movie" viewAllLink="/category/popular-movies" />
+      ),
+      pagination: (
+        <PaginationBar currentPage={popularMovies.page} totalPages={popularMovies.totalPages} onPageChange={popularMovies.handlePageChange} maxVisible={5} />
+      ),
+    },
+    {
+      row: (
+        <MovieRow title="Popular TV Shows" items={popularTV.items} isLoading={popularTV.isLoading} mediaType="tv" viewAllLink="/category/popular-tv" />
+      ),
+      pagination: (
+        <PaginationBar currentPage={popularTV.page} totalPages={popularTV.totalPages} onPageChange={popularTV.handlePageChange} maxVisible={5} />
+      ),
+    },
+    {
+      row: (
+        <MovieRow title="Top Rated Movies" items={topRatedMovies.items} isLoading={topRatedMovies.isLoading} mediaType="movie" viewAllLink="/category/top-rated-movies" />
+      ),
+      pagination: (
+        <PaginationBar currentPage={topRatedMovies.page} totalPages={topRatedMovies.totalPages} onPageChange={topRatedMovies.handlePageChange} maxVisible={5} />
+      ),
+    },
+    {
+      row: (
+        <MovieRow title="Upcoming Movies" items={upcomingMovies.items} isLoading={upcomingMovies.isLoading} mediaType="movie" viewAllLink="/category/upcoming-movies" />
+      ),
+      pagination: (
+        <PaginationBar currentPage={upcomingMovies.page} totalPages={upcomingMovies.totalPages} onPageChange={upcomingMovies.handlePageChange} maxVisible={5} />
+      ),
+    },
+  ];
 
   return (
     <>
@@ -48,15 +107,19 @@ export function HomePage() {
         <meta property="og:description" content="Your Gateway to Unlimited Entertainment" />
       </Helmet>
 
-      <HeroBanner items={heroItems} isLoading={trendingLoading} mediaType="movie" />
+      <HeroBanner items={heroItems} isLoading={trendingMovies.isLoading} mediaType="movie" />
 
       <div className="relative z-10 -mt-16 md:-mt-24 pb-8">
-        <MovieRow title="Trending Movies" items={trendingData?.results || []} isLoading={trendingLoading} mediaType="movie" viewAllLink="/category/trending-movies" />
-        <MovieRow title="Trending TV Series" items={tvTrendingData?.results || []} isLoading={tvTrendingLoading} mediaType="tv" viewAllLink="/category/trending-tv" />
-        <MovieRow title="Popular Movies" items={popularData?.results || []} isLoading={popularLoading} mediaType="movie" viewAllLink="/category/popular-movies" />
-        <MovieRow title="Popular TV Shows" items={tvPopularData?.results || []} isLoading={tvPopularLoading} mediaType="tv" viewAllLink="/category/popular-tv" />
-        <MovieRow title="Top Rated Movies" items={topRatedData?.results || []} isLoading={topRatedLoading} mediaType="movie" viewAllLink="/category/top-rated-movies" />
-        <MovieRow title="Upcoming Movies" items={upcomingData?.results || []} isLoading={upcomingLoading} mediaType="movie" viewAllLink="/category/upcoming-movies" />
+        <div className="px-4 md:px-8 lg:px-12">
+          {sections.map((s, i) => (
+            <div key={i}>
+              {s.row}
+              <div className="mt-2 mb-8">
+                {s.pagination}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

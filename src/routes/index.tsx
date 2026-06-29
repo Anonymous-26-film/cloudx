@@ -8,6 +8,8 @@ import { CategoryPage } from "../pages/CategoryPage";
 import { PluginDetailPage } from "../pages/PluginDetailPage";
 import { ServerManagementPage } from "../pages/ServerManagementPage";
 import { MovieHubPage } from "../pages/MovieHubPage";
+import { TvChannelPage } from "../pages/TvChannelPage";
+import { MoviesPage } from "../pages/MoviesPage";
 
 const CATEGORY_TITLES: Record<string, string> = {
   "trending-movies": "Trending Movies", "popular-movies": "Popular Movies",
@@ -28,9 +30,10 @@ export function AppRoutes() {
         <Route path="/hub" element={<MovieHubPage />} />
         <Route path="/search" element={<SearchPage />} />
         <Route path="/category/:category" element={<CategoryRoute />} />
+        <Route path="/tv-channel" element={<TvChannelPage />} />
+        <Route path="/movies" element={<MoviesPage />} />
 
         {/* Legacy nav routes */}
-        <Route path="/movies" element={<CategoryPage category="Movie" title="Movie Sources" description="Streaming sources for movies" />} />
         <Route path="/tv" element={<CategoryPage category="TvSeries" title="TV Series Sources" description="Streaming sources for TV series" />} />
         <Route path="/trending" element={<CategoryPage category="trending-movies" title="Trending Movies" description="The most trending movies this week" />} />
         <Route path="/popular" element={<CategoryPage category="popular-movies" title="Popular Movies" description="The most popular movies right now" />} />

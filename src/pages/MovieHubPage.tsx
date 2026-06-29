@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
@@ -8,6 +8,7 @@ import {
   RefreshCw, PanelLeft, Server,
 } from "lucide-react";
 import { ServerSidebar } from "../components/ServerSidebar";
+import { PaginationBar } from "../components/PaginationBar";
 import { pluginService } from "../services/pluginService";
 import { movieService } from "../services/tmdbService";
 import { PageLoader } from "../components/LoadingSpinner";
@@ -25,6 +26,19 @@ export function MovieHubPage() {
   const [showPreview, setShowPreview] = useState(!playParam);
   const [playingMovieId, setPlayingMovieId] = useState<number>(Number(playParam) || 0);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+
+  // Reset page on search query change
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
   // CloudX servers for sidebar
   const { data: plugins, isLoading: pluginsLoading } = useQuery({
     queryKey: ["plugins", "all"],
@@ -32,23 +46,31 @@ export function MovieHubPage() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // TMDB movie data
-  const { data: trendingMovies } = useQuery({
-    queryKey: ["trending", "movies"],
-    queryFn: () => movieService.getTrending(),
+  const isSearching = searchQuery.trim().length > 0;
+
+  // TMDB trending movies (paginated)
+  const { data: trendingData } = useQuery({
+    queryKey: ["hub", "trending", page],
+    queryFn: () => movieService.getTrending(page),
+    placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
+    enabled: !isSearching,
   });
-  const { data: searchResults } = useQuery({
-    queryKey: ["search", "movies", searchQuery],
-    queryFn: () => movieService.search(searchQuery),
-    enabled: searchQuery.trim().length > 0,
+
+  // TMDB search (paginated)
+  const { data: searchData } = useQuery({
+    queryKey: ["hub", "search", searchQuery, page],
+    queryFn: () => movieService.search(searchQuery, page),
+    placeholderData: keepPreviousData,
+    enabled: isSearching,
     staleTime: 60 * 1000,
   });
 
+  const currentData = isSearching ? searchData : trendingData;
+  const movies = currentData?.results || [];
+  const totalPages = currentData?.total_pages || 0;
+
   const allPlugins = plugins || [];
-  const movies = searchQuery.trim()
-    ? (searchResults?.results || [])
-    : (trendingMovies?.results || []);
 
   if (pluginsLoading) return <PageLoader />;
 
@@ -77,11 +99,11 @@ export function MovieHubPage() {
           />
 
           {/* Main */}
-          <main className={`flex-1 min-w-0 transition-all duration-300 ${sidebarOpen ? "lg:ml-72" : "lg:ml-0"}`}>
+          <main className="flex-1 min-w-0 transition-all duration-300">
             {/* Top bar */}
             <div className="sticky top-16 z-30 bg-background/95 backdrop-blur-sm border-b border-border/50 px-4 md:px-6 py-3">
               <div className="flex items-center gap-3">
-                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Toggle server list">
+                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors lg:hidden" title="Toggle server list">
                   <PanelLeft className="w-5 h-5" />
                 </button>
                 {selectedServer && (
@@ -137,11 +159,20 @@ export function MovieHubPage() {
               {/* Movie grid */}
               {(!playingMovieId || showPreview) && movies.length > 0 && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
-                    <Play className="w-5 h-5 text-primary" />
-                    {searchQuery ? `Search: "${searchQuery}"` : "Trending Movies"}
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-8">
+                  {/* Section header with page info */}
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Play className="w-5 h-5 text-primary" />
+                      {isSearching ? `Search: "${searchQuery}"` : "Trending Movies"}
+                    </h3>
+                    {totalPages > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        Page {page} of {totalPages}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 mb-6">
                     {movies.map((movie, i) => (
                       <motion.button
                         key={movie.id}
@@ -169,6 +200,14 @@ export function MovieHubPage() {
                       </motion.button>
                     ))}
                   </div>
+
+                  {/* Pagination */}
+                  <PaginationBar
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                    maxVisible={5}
+                  />
                 </motion.div>
               )}
 

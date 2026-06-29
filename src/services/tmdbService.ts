@@ -57,6 +57,10 @@ export const movieService = {
     tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.SEARCH_MOVIE, { params: { query, page } }),
   getGenres: () =>
     tmdbClient.get<GenresResponse>(ENDPOINTS.MOVIE_GENRES),
+  discoverAnime: (page = 1) =>
+    tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.DISCOVER_MOVIE, {
+      params: { page, with_keywords: "210024", sort_by: "popularity.desc", with_original_language: "ja" },
+    }),
 };
 
 // ── TV ──

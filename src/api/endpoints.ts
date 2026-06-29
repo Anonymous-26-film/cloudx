@@ -48,6 +48,9 @@ export const ENDPOINTS = {
 
   // Trending All
   TRENDING_ALL: "/trending/all/week",
+
+  // Discover (genre/keyword filtered)
+  DISCOVER_MOVIE: "/discover/movie",
 };
 
 // ========================================

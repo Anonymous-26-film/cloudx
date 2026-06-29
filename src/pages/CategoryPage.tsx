@@ -1,12 +1,11 @@
-import { useCallback } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useState, useEffect, useCallback } from "react";
+import { useQuery, useInfiniteQuery, keepPreviousData } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { MovieCard } from "../components/MovieCard";
+import { PaginationBar } from "../components/PaginationBar";
 import { PluginCardGrid } from "../components/PluginCard";
 import { SkeletonGrid } from "../components/SkeletonCard";
-import { LoadingSpinner } from "../components/LoadingSpinner";
-import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import { movieService } from "../services/tmdbService";
 import { tvService } from "../services/tmdbService";
 import { pluginService } from "../services/pluginService";
@@ -27,11 +26,13 @@ const TMDB_FETCHERS: Record<string, (p: number) => Promise<TMDBResponse<Movie | 
   "trending-tv": (p) => tvService.getTrending(p),
   "popular-tv": (p) => tvService.getPopular(p),
   "top-rated-tv": (p) => tvService.getTopRated(p),
+  Anime: (p) => movieService.discoverAnime(p),
 };
 
 const MEDIA_TYPE_MAP: Record<string, "movie" | "tv"> = {
   "trending-movies": "movie", "popular-movies": "movie", "top-rated-movies": "movie", "upcoming-movies": "movie",
   "trending-tv": "tv", "popular-tv": "tv", "top-rated-tv": "tv",
+  Anime: "movie",
 };
 
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
@@ -65,39 +66,76 @@ function TMDBCategoryPage({ category, title, description }: CategoryPageProps) {
   const fetcher = TMDB_FETCHERS[category];
   const mediaType = MEDIA_TYPE_MAP[category] || "movie";
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ["category", category],
-    queryFn: ({ pageParam = 1 }) => fetcher(pageParam as number),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage: TMDBResponse<Movie | TVShow>) =>
-      lastPage.page < lastPage.total_pages ? lastPage.page + 1 : undefined,
+  const [page, setPage] = useState(1);
+
+  // Reset page when category changes
+  useEffect(() => {
+    setPage(1);
+  }, [category]);
+
+  const handlePageChange = useCallback((newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["category", category, page],
+    queryFn: () => fetcher(page),
+    placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
   });
 
-  const stableCallback = useCallback(() => { fetchNextPage(); }, [fetchNextPage]);
-  const { loadMoreRef } = useInfiniteScroll({ hasNextPage: !!hasNextPage, isFetchingNextPage, fetchNextPage: stableCallback });
-  const allItems = data?.pages.flatMap((page) => page.results) || [];
+  const items = data?.results || [];
+  const totalPages = data?.total_pages || 0;
 
   return (
     <>
       <Helmet><title>{title} — PortalHub</title><meta name="description" content={description} /></Helmet>
       <div className="min-h-screen pt-24 pb-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
+        <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-12">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             <h1 className="text-3xl font-extrabold text-foreground tracking-tight mb-2">{title}</h1>
             {description && <p className="text-muted-foreground">{description}</p>}
           </motion.div>
-          {isLoading ? <SkeletonGrid count={20} /> : (
+          {isLoading ? <SkeletonGrid count={20} /> : items.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-5xl mb-4">&#x1F3AC;</div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">No content found</h3>
+              <p className="text-muted-foreground text-sm">Try a different category</p>
+            </div>
+          ) : (
             <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-                {allItems.map((item, i) => (
-                  <motion.div key={`${item.id}-${i}`} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.02, 0.5) }}>
+              {/* Page info */}
+              <div className="text-sm text-muted-foreground mb-4">
+                Page {page} of {totalPages}
+              </div>
+
+              {/* Grid */}
+              <motion.div
+                key={page}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4"
+              >
+                {items.map((item, i) => (
+                  <motion.div
+                    key={`${item.id}-${page}-${i}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.02, 0.5) }}
+                  >
                     <MovieCard item={item} mediaType={mediaType} />
                   </motion.div>
                 ))}
               </motion.div>
-              <div ref={loadMoreRef} className="mt-8 flex justify-center">{isFetchingNextPage && <LoadingSpinner size="md" />}</div>
-              {!hasNextPage && allItems.length > 0 && <p className="text-center text-muted-foreground text-sm mt-6">You've reached the end of the list</p>}
+
+              {/* Pagination */}
+              <PaginationBar
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                maxVisible={5}
+              />
             </>
           )}
         </div>

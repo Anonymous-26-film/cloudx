@@ -28,6 +28,7 @@ export function ServerSidebar({
   onToggle,
 }: ServerSidebarProps) {
   const [searchServer, setSearchServer] = useState("");
+  const [imgErrors, setImgErrors] = useState<Set<string>>(new Set());
 
   const filtered = searchServer.trim()
     ? plugins.filter(
@@ -123,14 +124,15 @@ export function ServerSidebar({
 
                   {/* Icon */}
                   <div className="w-8 h-8 rounded-lg overflow-hidden bg-background border border-border/30 flex items-center justify-center flex-shrink-0">
-                    {plugin.iconUrl ? (
+                    {plugin.iconUrl && !imgErrors.has(plugin.internalName) ? (
                       <img
                         src={plugin.iconUrl}
                         alt={plugin.name}
                         className="w-full h-full object-contain p-1"
+                        onError={() => setImgErrors(prev => new Set(prev).add(plugin.internalName))}
                       />
                     ) : (
-                      <Server className="w-4 h-4 text-muted-foreground" />
+                      <Film className="w-4 h-4 text-muted-foreground" />
                     )}
                   </div>
 

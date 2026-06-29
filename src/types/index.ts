@@ -140,3 +140,12 @@ export type MediaItem = (Movie | TVShow) & {
 };
 
 export type MediaType = "movie" | "tv";
+
+// IPTV Channel types
+export interface IPTVChannel {
+  id: string;
+  name: string;
+  logo: string | null;
+  group: string;
+  url: string;
+}
