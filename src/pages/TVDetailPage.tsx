@@ -1,0 +1,24 @@
+import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+
+/** Simplified detail page that redirects to the plugin catalog */
+export function TVDetailPage() {
+
+  return (
+    <>
+      <Helmet>
+        <title>PortalHub</title>
+      </Helmet>
+      <div className="min-h-screen pt-24 pb-12 flex flex-col items-center justify-center gap-4">
+        <div className="text-6xl">&#x1F4FA;</div>
+        <h1 className="text-2xl font-bold text-foreground">Content Moved</h1>
+        <p className="text-muted-foreground text-center max-w-md">
+          PortalHub now serves as a catalog of Indonesian streaming sources. Browse available sources to find where to watch content.
+        </p>
+        <Link to="/" className="text-primary hover:text-primary/80 font-medium mt-2">
+          Browse Sources
+        </Link>
+      </div>
+    </>
+  );
+}

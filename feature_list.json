@@ -1,0 +1,81 @@
+{
+  "project": "portalhub",
+  "last_updated": "",
+  "rules": {
+    "single_active_feature": true,
+    "passing_requires_evidence": true,
+    "do_not_skip_verification": true
+  },
+  "status_legend": {
+    "not_started": "Work has not begun.",
+    "in_progress": "The feature is the current active task.",
+    "blocked": "Work cannot continue until a documented blocker is resolved.",
+    "passing": "Required verification has passed and evidence is recorded."
+  },
+  "features": [
+    {
+      "id": "web-001",
+      "priority": 1,
+      "area": "website",
+      "title": "Bikin website/blog tutorial STB (Blogger/WordPress)",
+      "user_visible_behavior": "Pengunjung bisa buka website dan baca artikel tutorial STB.",
+      "status": "not_started",
+      "verification": [
+        "Buka URL website.",
+        "Pastikan homepage tampil tanpa error.",
+        "Cek minimal 1 artikel tutorial terbaca lengkap dengan gambar.",
+        "Cek mobile responsive."
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "web-002",
+      "priority": 2,
+      "area": "monetization",
+      "title": "Pasang iklan AdSterra di website",
+      "user_visible_behavior": "Pengunjung melihat banner/native ads di halaman tutorial.",
+      "status": "not_started",
+      "verification": [
+        "Buka 3 halaman berbeda di website.",
+        "Pastikan iklan muncul tanpa merusak layout.",
+        "Cek dashboard AdSterra — impressions tercatat.",
+        "Pastikan iklan TIDAK muncul sebagai popup agresif (hanya banner/native)."
+      ],
+      "evidence": [],
+      "notes": ""
+    },
+    {
+      "id": "yt-001",
+      "priority": 3,
+      "area": "youtube",
+      "title": "Capai 4.000 jam tayang YouTube untuk monetisasi",
+      "user_visible_behavior": "Channel YouTube memenuhi syarat YPP dan bisa apply monetisasi.",
+      "status": "not_started",
+      "verification": [
+        "Cek YouTube Studio → Monetisasi.",
+        "Pastikan watch time 12 bulan terakhir ≥ 4.000 jam.",
+        "Pastikan subscriber ≥ 1.000.",
+        "Tombol 'Apply' di YPP sudah tidak abu-abu / bisa diklik."
+      ],
+      "evidence": [],
+      "notes": "Subscriber sudah 2.000+. Tinggal kejar jam tayang."
+    },
+    {
+      "id": "yt-002",
+      "priority": 4,
+      "area": "youtube",
+      "title": "Bikin 10 video tutorial STB 8-15 menit",
+      "user_visible_behavior": "Channel punya minimal 10 video panjang baru yang SEO-friendly.",
+      "status": "not_started",
+      "verification": [
+        "Cek channel — minimal 10 video baru terupload.",
+        "Durasi setiap video 8-15 menit.",
+        "Judul mengandung keyword yang dicari (cek YouTube Search).",
+        "Setiap video punya deskripsi + tag lengkap."
+      ],
+      "evidence": [],
+      "notes": "Gunakan 30 ide konten yang sudah dibuat sebelumnya."
+    }
+  ]
+}
