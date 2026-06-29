@@ -6,18 +6,25 @@ import { motion } from "framer-motion";
 import {
   Search, X, Play, Film,
   RefreshCw, PanelLeft, Server,
+  Star, Clock, Calendar,
 } from "lucide-react";
 import { ServerSidebar } from "../components/ServerSidebar";
 import { PaginationBar } from "../components/PaginationBar";
 import { pluginService } from "../services/pluginService";
-import { movieService } from "../services/tmdbService";
+import { movieService, tvService } from "../services/tmdbService";
 import { PageLoader } from "../components/LoadingSpinner";
 import { IMAGE_URL } from "../api/endpoints";
+import {
+  getTitle, getReleaseYear,
+  formatRating, formatRuntime,
+  getReleaseDate,
+} from "../utils/helpers";
 import type { CloudXPlugin } from "../types";
 
 export function MovieHubPage() {
   const [searchParams] = useSearchParams();
   const playParam = searchParams.get("play");
+  const mediaType = (searchParams.get("type") || "movie") as "movie" | "tv";
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selectedServer, setSelectedServer] = useState<CloudXPlugin | null>(null);
@@ -25,6 +32,17 @@ export function MovieHubPage() {
   const [iframeKey, setIframeKey] = useState(0);
   const [showPreview, setShowPreview] = useState(!playParam);
   const [playingMovieId, setPlayingMovieId] = useState<number>(Number(playParam) || 0);
+
+  // Fetch detail when playing
+  const { data: playingDetail } = useQuery({
+    queryKey: ["hub-detail", mediaType, playingMovieId],
+    queryFn: () =>
+      mediaType === "movie"
+        ? movieService.getDetail(playingMovieId)
+        : tvService.getDetail(playingMovieId),
+    enabled: playingMovieId > 0,
+    staleTime: 10 * 60 * 1000,
+  });
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -233,6 +251,68 @@ export function MovieHubPage() {
                         style={{ border: "none" }}
                         title="Video Player"
                       />
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Movie Detail */}
+              {playingMovieId > 0 && !showPreview && playingDetail && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mt-6 p-6 bg-card rounded-xl border border-border/50"
+                >
+                  <div className="flex flex-col md:flex-row gap-6">
+                    {playingDetail.poster_path && (
+                      <div className="flex-shrink-0 w-32 md:w-40 rounded-lg overflow-hidden border border-border/30">
+                        <img
+                          src={IMAGE_URL(playingDetail.poster_path, "w342")!}
+                          alt={getTitle(playingDetail)}
+                          className="w-full aspect-[2/3] object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h2 className="text-2xl font-bold text-foreground mb-1">
+                        {getTitle(playingDetail)}
+                      </h2>
+                      {playingDetail.tagline && (
+                        <p className="text-sm text-muted-foreground italic mb-3">
+                          {playingDetail.tagline}
+                        </p>
+                      )}
+                      <div className="flex flex-wrap items-center gap-3 mb-3">
+                        <div className="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 rounded px-2 py-0.5 text-sm font-semibold">
+                          <Star className="w-4 h-4 fill-yellow-500" />
+                          {formatRating(playingDetail.vote_average)}
+                        </div>
+                        {getReleaseYear(playingDetail) && (
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Calendar className="w-3.5 h-3.5" /> {getReleaseDate(playingDetail)}
+                          </span>
+                        )}
+                        {mediaType === "movie" && playingDetail.runtime && (
+                          <span className="text-sm text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5" /> {formatRuntime(playingDetail.runtime)}
+                          </span>
+                        )}
+                      </div>
+                      {playingDetail.genres && playingDetail.genres.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {playingDetail.genres.map((g: { id: number; name: string }) => (
+                            <span key={g.id} className="text-xs bg-secondary text-foreground/80 rounded-full px-3 py-1 border border-border/50">
+                              {g.name}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {playingDetail.overview && (
+                        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-4">
+                          {playingDetail.overview}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </motion.div>

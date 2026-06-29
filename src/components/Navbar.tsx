@@ -7,9 +7,7 @@ const navLinks = [
   { label: "Home", to: "/" },
   { label: "Watch", to: "/hub" },
   { label: "Movies", to: "/movies" },
-  { label: "TV Channel", to: "/tv-channel" },
   { label: "Anime", to: "/category/Anime" },
-  { label: "Servers", to: "/servers" },
 ];
 
 export function Navbar() {

@@ -49,7 +49,7 @@ export function SkeletonHero() {
 
 export function SkeletonGrid({ count = 20 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i}>
           <Skeleton className="aspect-[2/3] rounded-md w-full" />

@@ -215,7 +215,7 @@ export function DetailFilmPage() {
               </div>
 
               {/* Info */}
-              <div className="flex-1 text-white pb-4 md:pb-0">
+              <div className="flex-1 text-white pb-4 md:pb-0 pt-12 sm:pt-0 w-full">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-2">
                   {title}
                 </h1>
@@ -264,7 +264,7 @@ export function DetailFilmPage() {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-wrap gap-3 mb-4">
+                <div className="flex flex-wrap gap-3 mb-4 justify-center sm:justify-start">
                   <Link
                     to={`/hub?play=${id}&type=${mediaType}`}
                     className="flex items-center gap-2 bg-primary text-white font-bold px-6 py-2.5 rounded-md hover:bg-primary/80 transition-colors text-sm sm:text-base"
