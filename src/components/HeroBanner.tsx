@@ -5,6 +5,7 @@ import { Play, Info, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { BACKDROP_URL } from "../api/endpoints";
 import { getTitle, getReleaseYear, truncateText, formatRating } from "../utils/helpers";
 import { SkeletonHero } from "./SkeletonCard";
+import { AdBanner } from "./ads";
 import type { Movie, TVShow } from "../types";
 
 interface HeroBannerProps {
@@ -46,6 +47,7 @@ export function HeroBanner({ items, isLoading = false, mediaType = "movie" }: He
   };
 
   return (
+    <>
     <div className="relative w-full overflow-hidden" style={{ minHeight: "56.25vw", maxHeight: "85vh" }}>
       <AnimatePresence mode="wait">
         <motion.div
@@ -143,5 +145,10 @@ export function HeroBanner({ items, isLoading = false, mediaType = "movie" }: He
         </div>
       )}
     </div>
+
+    <div className="hidden md:flex justify-center py-2">
+      <AdBanner type="728x90" />
+    </div>
+    </>
   );
 }

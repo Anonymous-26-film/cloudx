@@ -1,6 +1,26 @@
 import { useEffect, useRef } from "react";
 
-const CONFIGS = {
+export type AdsterraType =
+  | "160x300"
+  | "160x600"
+  | "300x250"
+  | "320x50"
+  | "468x60"
+  | "728x90";
+
+interface AdBannerProps {
+  type: AdsterraType;
+  className?: string;
+}
+
+interface AdConfig {
+  key: string;
+  width: number;
+  height: number;
+  invokeUrl: string;
+}
+
+const CONFIGS: Record<AdsterraType, AdConfig> = {
   "160x300": {
     key: "e4771ea5ace89e332e280a77dabecf8b",
     width: 160,
@@ -45,8 +65,9 @@ const CONFIGS = {
   },
 };
 
-export default function AdsterraBanner({ type }) {
-  const containerRef = useRef(null);
+export default function AdBanner({ type, className = "" }: AdBannerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const loadedRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -57,21 +78,40 @@ export default function AdsterraBanner({ type }) {
     const container = containerRef.current;
     if (!container) return;
 
-    const atOptionsScript = document.createElement("script");
-    atOptionsScript.textContent = `window.atOptions = ${JSON.stringify({ key: config.key, format: "iframe", height: config.height, width: config.width, params: {} })};`;
+    let currentScripts: HTMLScriptElement[] = [];
 
-    const invokeScript = document.createElement("script");
-    invokeScript.src = config.invokeUrl;
-    invokeScript.async = true;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry.isIntersecting || loadedRef.current) return;
 
-    container.appendChild(atOptionsScript);
-    container.appendChild(invokeScript);
+        loadedRef.current = true;
+
+        const atOpts = document.createElement("script");
+        atOpts.textContent = `window.atOptions = ${JSON.stringify({ key: config.key, format: "iframe", height: config.height, width: config.width, params: {} })};`;
+
+        const invoke = document.createElement("script");
+        invoke.src = config.invokeUrl;
+        invoke.async = true;
+
+        container.appendChild(atOpts);
+        container.appendChild(invoke);
+        currentScripts = [atOpts, invoke];
+
+        observer.disconnect();
+      },
+      { rootMargin: "200px 0px" },
+    );
+
+    observer.observe(container);
 
     return () => {
-      const scripts = container.querySelectorAll("script");
-      scripts.forEach((s) => s.remove());
+      observer.disconnect();
+      currentScripts.forEach((s) => {
+        if (s.parentNode) s.parentNode.removeChild(s);
+      });
       if (typeof window !== "undefined") {
-        delete window.atOptions;
+        delete (window as any).atOptions;
       }
     };
   }, [type]);
@@ -80,7 +120,9 @@ export default function AdsterraBanner({ type }) {
 
   if (!config) {
     if (typeof window !== "undefined") {
-      console.warn(`[AdsterraBanner] Unknown type: "${type}". Valid types: ${Object.keys(CONFIGS).join(", ")}`);
+      console.warn(
+        `[AdBanner] Unknown type: "${type}". Valid: ${Object.keys(CONFIGS).join(", ")}`,
+      );
     }
     return null;
   }
@@ -88,7 +130,7 @@ export default function AdsterraBanner({ type }) {
   return (
     <div
       ref={containerRef}
-      className="adsterra-banner"
+      className={`ad-container ${className}`}
       style={{
         width: "100%",
         maxWidth: config.width,

@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../lib/utils";
+import { AdBanner } from "./ads";
 
 interface PaginationBarProps {
   currentPage: number;
@@ -61,6 +62,7 @@ export function PaginationBar({
     "inline-flex items-center justify-center min-w-[2.25rem] h-9 px-2 rounded-md text-sm font-medium transition-colors";
 
   return (
+    <div>
     <nav
       role="navigation"
       aria-label="Pagination"
@@ -138,5 +140,9 @@ export function PaginationBar({
         <ChevronRight className="w-4 h-4" />
       </button>
     </nav>
+    <div className="flex md:hidden justify-center mt-4">
+      <AdBanner type="320x50" />
+    </div>
+    </div>
   );
 }

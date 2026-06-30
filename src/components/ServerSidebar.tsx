@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Server, ChevronRight, Activity, Monitor, Film, Tv, Globe, X } from "lucide-react";
+import { AdBanner } from "./ads";
 import type { CloudXPlugin } from "../types";
 
 interface ServerSidebarProps {
@@ -66,6 +67,11 @@ export function ServerSidebar({
           </button>
         </div>
 
+        {/* Top Ad — 160x600 */}
+        <div className="hidden lg:flex justify-center py-1 border-b border-border/30">
+          <AdBanner type="160x600" />
+        </div>
+
         {/* Search */}
         <div className="p-2 border-b border-border/30">
           <div className="flex items-center bg-secondary/50 rounded-md border border-border/40 px-2">
@@ -88,7 +94,7 @@ export function ServerSidebar({
         </div>
 
         {/* Server list */}
-        <div className="flex-1 overflow-y-auto" style={{ scrollbarWidth: "thin" }}>
+        <div className="flex-1 overflow-y-auto relative" style={{ scrollbarWidth: "thin" }}>
           <div className="p-1.5 space-y-0.5">
             {filtered.map((plugin, i) => {
               const isSelected = selectedServer?.internalName === plugin.internalName;
@@ -155,6 +161,11 @@ export function ServerSidebar({
                 </motion.button>
               );
             })}
+          </div>
+
+          {/* Bottom sticky ad */}
+          <div className="hidden lg:flex justify-center py-1 sticky bottom-0 bg-background border-t border-border/30">
+            <AdBanner type="160x600" />
           </div>
         </div>
 

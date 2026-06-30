@@ -164,14 +164,14 @@
   display: none;
 }
 
-/* ── Adsterra Ad Containers ── */
-.adsterra-banner {
+/* ── Ad Containers ── */
+.ad-container {
   max-width: 100% !important;
   overflow: hidden !important;
 }
-.adsterra-banner iframe,
-.adsterra-banner img,
-.adsterra-banner div {
+.ad-container iframe,
+.ad-container img,
+.ad-container div {
   max-width: 100% !important;
 }
 
@@ -184,4 +184,18 @@
 [id^="container-"] img,
 [id^="container-"] div {
   max-width: 100% !important;
+}
+
+/* Responsive ad breakpoints */
+@media (max-width: 640px) {
+  .ad-container {
+    max-width: 100% !important;
+    /* Scale down large banners on tiny screens */
+    transform-origin: center;
+  }
+  .ad-container[style*="max-width: 728"],
+  .ad-container[style*="max-width: 468"],
+  .ad-container[style*="max-width: 160x600"] {
+    transform: scale(0.8);
+  }
 }

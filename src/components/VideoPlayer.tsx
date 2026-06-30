@@ -1,3 +1,5 @@
+import { NativeBanner } from "./ads";
+
 interface VideoPlayerProps {
   mediaType: "movie" | "tv";
   id: number;
@@ -7,6 +9,7 @@ interface VideoPlayerProps {
 
 export function VideoPlayer(_props: VideoPlayerProps) {
   return (
+    <>
     <div className="w-full aspect-video bg-secondary rounded-lg flex flex-col items-center justify-center gap-4">
       <div className="text-6xl">&#x1F3AC;</div>
       <div className="text-center px-4">
@@ -16,5 +19,9 @@ export function VideoPlayer(_props: VideoPlayerProps) {
         </p>
       </div>
     </div>
+    <div className="mt-4 flex justify-center">
+      <NativeBanner />
+    </div>
+    </>
   );
 }

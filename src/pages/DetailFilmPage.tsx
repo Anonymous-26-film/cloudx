@@ -16,6 +16,7 @@ import {
 import { IMAGE_URL, BACKDROP_URL } from "../api/endpoints";
 import { movieService, tvService } from "../services/tmdbService";
 import { LoadingSpinner } from "../components/LoadingSpinner";
+import { AdBanner, NativeBanner } from "../components/ads";
 import {
   getTitle,
   getReleaseYear,
@@ -426,6 +427,11 @@ export function DetailFilmPage() {
                   )}
                 </div>
 
+                {/* Ad after sinopsis */}
+                <div className="flex justify-center my-6">
+                  <AdBanner type="300x250" />
+                </div>
+
                 {/* Crew Grid */}
                 {crewItems.length > 0 && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
@@ -503,6 +509,11 @@ export function DetailFilmPage() {
               </section>
             )}
 
+            {/* ── Native Banner after Cast ── */}
+            <div className="flex justify-center my-8">
+              <NativeBanner />
+            </div>
+
             {/* ── Trailers Section ── */}
             {videos.length > 1 && (
               <section className="mt-10">
@@ -535,6 +546,11 @@ export function DetailFilmPage() {
                 </div>
               </section>
             )}
+
+            {/* ── Ad before Recommendations ── */}
+            <div className="flex justify-center my-8">
+              <AdBanner type="300x250" />
+            </div>
 
             {/* ── Recommendations ── */}
             {recommendations.length > 0 && (

@@ -1,9 +1,10 @@
-import { useRef } from "react";
+import { useRef, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { PluginCard } from "./PluginCard";
 import { SkeletonCard } from "./SkeletonCard";
+import { AdBanner } from "./ads";
 import type { CloudXPlugin } from "../types";
 
 interface PluginRowProps {
@@ -76,9 +77,13 @@ export function PluginRow({ title, items, isLoading = false, viewAllLink }: Plug
         >
           {isLoading
             ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
-            : items.map((plugin) => (
-                <PluginCard key={plugin.internalName} plugin={plugin} />
-              ))}
+            : items.flatMap((plugin, index) => {
+                const cards: JSX.Element[] = [<PluginCard key={plugin.internalName} plugin={plugin} />];
+                if ((index + 1) % 6 === 0 && index + 1 < items.length) {
+                  cards.push(<Fragment key={`ad-plugin-${index}`}><div className="flex-shrink-0 w-[300px]"><AdBanner type="300x250" /></div></Fragment>);
+                }
+                return cards;
+              })}
         </div>
       </div>
     </motion.section>

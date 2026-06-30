@@ -3,7 +3,7 @@ import { useEffect } from "react";
 const POPUNDER_URL =
   "https://pl30121265.effectivecpmnetwork.com/8b/d9/5c/8bd95c2266e3658635aecb8e176bad42.js";
 
-const loadedScripts = /* @__PURE__ */ new Set();
+const loadedScripts = new Set<string>();
 
 export default function Popunder() {
   useEffect(() => {

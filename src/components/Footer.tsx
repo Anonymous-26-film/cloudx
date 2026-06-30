@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Film } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { XIcon, InstagramIcon, FacebookIcon } from "./SocialIcon";
+import { AdBanner } from "./ads";
 
 const footerLinks = [
   {
@@ -99,6 +100,10 @@ export function Footer() {
               </ul>
             </div>
           ))}
+        </div>
+
+        <div className="flex justify-center py-4">
+          <AdBanner type="468x60" />
         </div>
 
         <Separator className="bg-border/50 mb-6" />

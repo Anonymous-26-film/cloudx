@@ -5,6 +5,7 @@ import { OgMeta } from "../components/OgMeta";
 import { HeroBanner } from "../components/HeroBanner";
 import { MovieRow } from "../components/MovieRow";
 import { PaginationBar } from "../components/PaginationBar";
+import { NativeBanner } from "../components/ads";
 import { movieService } from "../services/tmdbService";
 import { tvService } from "../services/tmdbService";
 
@@ -111,6 +112,10 @@ export function HomePage() {
       />
 
       <HeroBanner items={heroItems} isLoading={trendingMovies.isLoading} mediaType="movie" />
+
+      <div className="flex justify-center py-4">
+        <NativeBanner />
+      </div>
 
       <div className="relative z-10 mt-12 md:mt-16 pb-8">
         <div className="md:px-8 lg:px-12">
