@@ -3,22 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { OgMeta } from "../components/OgMeta";
 import { motion } from "framer-motion";
-import { Search, X, Film, TrendingUp, Star, Clock, Sparkles } from "lucide-react";
+import { Search, X, Film } from "lucide-react";
 import { MovieCard } from "../components/MovieCard";
+import { MovieFilter } from "../components/MovieFilter";
 import { SkeletonGrid } from "../components/SkeletonCard";
 
 import { PaginationBar } from "../components/PaginationBar";
 import { movieService } from "../services/tmdbService";
 import type { Movie, TMDBResponse } from "../types";
 
-type MovieTab = "trending" | "popular" | "top-rated" | "upcoming";
-
-const TABS: { key: MovieTab; label: string; icon: React.ReactNode }[] = [
-  { key: "trending", label: "Trending", icon: <TrendingUp className="w-4 h-4" /> },
-  { key: "popular", label: "Popular", icon: <Sparkles className="w-4 h-4" /> },
-  { key: "top-rated", label: "Top Rated", icon: <Star className="w-4 h-4" /> },
-  { key: "upcoming", label: "Upcoming", icon: <Clock className="w-4 h-4" /> },
-];
+type MovieTab = "trending" | "popular" | "top_rated" | "upcoming";
 
 const FETCHERS: Record<
   MovieTab,
@@ -26,19 +20,48 @@ const FETCHERS: Record<
 > = {
   trending: (p) => movieService.getTrending(p),
   popular: (p) => movieService.getPopular(p),
-  "top-rated": (p) => movieService.getTopRated(p),
+  top_rated: (p) => movieService.getTopRated(p),
   upcoming: (p) => movieService.getUpcoming(p),
 };
 
+// ── localStorage filter helpers ──
+const FILTER_STORAGE = {
+  category: "portalhub-filter-category",
+  genres: "portalhub-filter-genres",
+  year: "portalhub-filter-year",
+};
+
+function safeJsonParse<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
+
 export function MoviesPage() {
-  const [activeTab, setActiveTab] = useState<MovieTab>("trending");
+  const [activeCategory, setActiveCategory] = useState<MovieTab>(
+    () => (localStorage.getItem(FILTER_STORAGE.category) as MovieTab) || "trending",
+  );
+  const [selectedGenres, setSelectedGenres] = useState<number[]>(
+    () => safeJsonParse<number[]>(localStorage.getItem(FILTER_STORAGE.genres), []),
+  );
+  const [selectedYear, setSelectedYear] = useState<number | null>(
+    () => safeJsonParse<number | null>(localStorage.getItem(FILTER_STORAGE.year), null),
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
 
-  // Reset page when tab or search changes
+  // Persist filter values to localStorage
+  useEffect(() => { localStorage.setItem(FILTER_STORAGE.category, activeCategory); }, [activeCategory]);
+  useEffect(() => { localStorage.setItem(FILTER_STORAGE.genres, JSON.stringify(selectedGenres)); }, [selectedGenres]);
+  useEffect(() => { localStorage.setItem(FILTER_STORAGE.year, JSON.stringify(selectedYear)); }, [selectedYear]);
+
+  // Reset page when filters or search change
   useEffect(() => {
     setPage(1);
-  }, [activeTab, searchQuery]);
+  }, [activeCategory, selectedGenres, selectedYear, searchQuery]);
 
   // Scroll to top on page change
   const handlePageChange = useCallback(
@@ -49,25 +72,40 @@ export function MoviesPage() {
     []
   );
 
-  const fetcher = FETCHERS[activeTab];
+  const isSearching = searchQuery.trim().length > 0;
+  const isFiltering = selectedGenres.length > 0 || selectedYear !== null;
 
+  // Category-based data
   const { data, isLoading } = useQuery({
-    queryKey: ["movies", activeTab, page],
-    queryFn: () => fetcher(page),
+    queryKey: ["movies", activeCategory, page],
+    queryFn: () => FETCHERS[activeCategory](page),
     staleTime: 5 * 60 * 1000,
+    enabled: !isSearching && !isFiltering,
   });
 
+  // Discover (filtered by genre/year)
+  const { data: discoverData, isLoading: discoverLoading } = useQuery({
+    queryKey: ["movies", "discover", selectedGenres, selectedYear, page],
+    queryFn: () =>
+      movieService.discover({
+        page,
+        with_genres: selectedGenres.length > 0 ? selectedGenres.join(",") : undefined,
+        primary_release_year: selectedYear ?? undefined,
+      }),
+    staleTime: 5 * 60 * 1000,
+    enabled: !isSearching && isFiltering,
+  });
+
+  // Search
   const { data: searchData, isLoading: searchLoading } = useQuery({
     queryKey: ["movies", "search", searchQuery, page],
     queryFn: () => movieService.search(searchQuery, page),
-    enabled: searchQuery.trim().length > 0,
+    enabled: isSearching,
     staleTime: 30 * 1000,
   });
 
-  const isSearching = searchQuery.trim().length > 0;
-
-  const currentData = isSearching ? searchData : data;
-  const currentLoading = isSearching ? searchLoading : isLoading;
+  const currentData = isSearching ? searchData : isFiltering ? discoverData : data;
+  const currentLoading = isSearching ? searchLoading : isFiltering ? discoverLoading : isLoading;
   const items = currentData?.results || [];
   const totalPages = currentData?.total_pages || 0;
 
@@ -142,28 +180,21 @@ export function MoviesPage() {
             </div>
           </motion.div>
 
-          {/* Tabs (hidden when searching) */}
+          {/* MovieFilter (hidden when searching) */}
           {!isSearching && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="flex gap-1 mb-8 overflow-x-auto pb-1"
             >
-              {TABS.map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key)}
-                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.key
-                      ? "bg-primary text-white"
-                      : "bg-secondary/30 text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  }`}
-                >
-                  {tab.icon}
-                  {tab.label}
-                </button>
-              ))}
+              <MovieFilter
+                activeCategory={activeCategory}
+                onCategoryChange={(cat) => setActiveCategory(cat as MovieTab)}
+                selectedGenres={selectedGenres}
+                onGenresChange={setSelectedGenres}
+                selectedYear={selectedYear}
+                onYearChange={setSelectedYear}
+              />
             </motion.div>
           )}
 

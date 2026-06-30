@@ -69,6 +69,24 @@ export const movieService = {
     tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.DISCOVER_MOVIE, {
       params: { page, with_keywords: "210024", sort_by: "popularity.desc", with_original_language: "ja" },
     }),
+  discover: (params: {
+    page?: number;
+    with_genres?: string;
+    primary_release_year?: number;
+    with_keywords?: string;
+    with_original_language?: string;
+  }) =>
+    tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.DISCOVER_MOVIE, {
+      params: {
+        page: params.page || 1,
+        sort_by: "popularity.desc",
+        with_genres: params.with_genres,
+        primary_release_year: params.primary_release_year,
+        with_keywords: params.with_keywords,
+        with_original_language: params.with_original_language,
+        "vote_count.gte": 50,
+      },
+    }),
 };
 
 // ── TV ──

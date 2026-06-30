@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { ServerSidebar } from "../components/ServerSidebar";
 import { PaginationBar } from "../components/PaginationBar";
+import { MovieFilter } from "../components/MovieFilter";
 import { pluginService } from "../services/pluginService";
 import { movieService, tvService } from "../services/tmdbService";
 import { PageLoader } from "../components/LoadingSpinner";
@@ -23,6 +24,33 @@ import {
 import type { CloudXPlugin, Movie, TVShow } from "../types";
 
 const SIDEBAR_STORAGE_KEY = "portalhub-sidebar-open";
+const FILTER_STORAGE = {
+  category: "portalhub-filter-category",
+  genres: "portalhub-filter-genres",
+  year: "portalhub-filter-year",
+};
+
+function loadFilterState() {
+  const category = localStorage.getItem(FILTER_STORAGE.category) || "trending";
+  const genres = safeJsonParse<number[]>(
+    localStorage.getItem(FILTER_STORAGE.genres),
+    [],
+  );
+  const year = safeJsonParse<number | null>(
+    localStorage.getItem(FILTER_STORAGE.year),
+    null,
+  );
+  return { category, genres, year };
+}
+
+function safeJsonParse<T>(raw: string | null, fallback: T): T {
+  if (!raw) return fallback;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return fallback;
+  }
+}
 
 export function MovieHubPage() {
   const [searchParams] = useSearchParams();
@@ -41,6 +69,20 @@ export function MovieHubPage() {
   const [showPreview, setShowPreview] = useState(!playParam);
   const [playingMovieId, setPlayingMovieId] = useState<number>(Number(playParam) || 0);
   const [serverIconError, setServerIconError] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(() => loadFilterState().category);
+  const [selectedGenres, setSelectedGenres] = useState<number[]>(() => loadFilterState().genres);
+  const [selectedYear, setSelectedYear] = useState<number | null>(() => loadFilterState().year);
+
+  // Persist filter values to localStorage
+  useEffect(() => {
+    localStorage.setItem(FILTER_STORAGE.category, activeCategory);
+  }, [activeCategory]);
+  useEffect(() => {
+    localStorage.setItem(FILTER_STORAGE.genres, JSON.stringify(selectedGenres));
+  }, [selectedGenres]);
+  useEffect(() => {
+    localStorage.setItem(FILTER_STORAGE.year, JSON.stringify(selectedYear));
+  }, [selectedYear]);
 
   // Persist sidebar state
   const toggleSidebar = useCallback(() => {
@@ -93,7 +135,7 @@ export function MovieHubPage() {
 
   // Pagination
   const [page, setPage] = useState(1);
-  useEffect(() => { setPage(1); }, [searchQuery]);
+  useEffect(() => { setPage(1); }, [searchQuery, activeCategory, selectedGenres, selectedYear]);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
@@ -108,14 +150,37 @@ export function MovieHubPage() {
   });
 
   const isSearching = searchQuery.trim().length > 0;
+  const isFiltering = selectedGenres.length > 0 || selectedYear !== null;
 
-  // TMDB trending
-  const { data: trendingData } = useQuery({
-    queryKey: ["hub", "trending", page],
-    queryFn: () => movieService.getTrending(page),
+  // TMDB category-based (trending/popular/top_rated/upcoming)
+  const { data: categoryData } = useQuery({
+    queryKey: ["hub", activeCategory, page],
+    queryFn: () => {
+      switch (activeCategory) {
+        case "trending": return movieService.getTrending(page);
+        case "popular": return movieService.getPopular(page);
+        case "top_rated": return movieService.getTopRated(page);
+        case "upcoming": return movieService.getUpcoming(page);
+        default: return movieService.getTrending(page);
+      }
+    },
     placeholderData: keepPreviousData,
     staleTime: 5 * 60 * 1000,
-    enabled: !isSearching,
+    enabled: !isSearching && !isFiltering,
+  });
+
+  // TMDB discover (filtered by genre/year)
+  const { data: discoverData } = useQuery({
+    queryKey: ["hub", "discover", selectedGenres, selectedYear, page],
+    queryFn: () =>
+      movieService.discover({
+        page,
+        with_genres: selectedGenres.length > 0 ? selectedGenres.join(",") : undefined,
+        primary_release_year: selectedYear ?? undefined,
+      }),
+    placeholderData: keepPreviousData,
+    staleTime: 5 * 60 * 1000,
+    enabled: !isSearching && isFiltering,
   });
 
   // TMDB search
@@ -127,7 +192,7 @@ export function MovieHubPage() {
     staleTime: 60 * 1000,
   });
 
-  const currentData = isSearching ? searchData : trendingData;
+  const currentData = isSearching ? searchData : isFiltering ? discoverData : categoryData;
   const movies = currentData?.results || [];
   const totalPages = currentData?.total_pages || 0;
   const allPlugins = plugins || [];
@@ -266,13 +331,25 @@ export function MovieHubPage() {
               </motion.div>
             )}
 
+            {/* Filters */}
+            {!playingMovieId && (
+              <MovieFilter
+                activeCategory={activeCategory}
+                onCategoryChange={setActiveCategory}
+                selectedGenres={selectedGenres}
+                onGenresChange={setSelectedGenres}
+                selectedYear={selectedYear}
+                onYearChange={setSelectedYear}
+              />
+            )}
+
             {/* Movie grid */}
             {(!playingMovieId || showPreview) && movies.length > 0 && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
                     <Play className="w-5 h-5 text-primary" />
-                    {isSearching ? `Search: "${searchQuery}"` : "Trending Movies"}
+                    {isSearching ? `Search: "${searchQuery}"` : isFiltering ? "Filtered Movies" : `${activeCategory.replace("_", " ").replace(/\b\w/g, (c) => c.toUpperCase())} Movies`}
                   </h3>
                   {totalPages > 0 && (
                     <span className="text-xs text-muted-foreground">
