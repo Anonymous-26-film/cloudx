@@ -48,7 +48,7 @@ export function MovieRow({ title, items, isLoading = false, mediaType = "movie",
         </button>
         <div ref={rowRef} className="flex gap-8 overflow-x-auto scrollbar-hide px-4 md:px-8 lg:px-12 pb-4" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
           {isLoading ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />) : items.flatMap((item, index) => {
-            const cards: JSX.Element[] = [<MovieCard key={item.id} item={item} mediaType={mediaType} />];
+            const cards = [<MovieCard key={item.id} item={item} mediaType={mediaType} />];
             if ((index + 1) % 8 === 0 && index + 1 < items.length) {
               cards.push(<Fragment key={`ad-${index}`}><div className="flex-shrink-0 w-[300px]"><AdBanner type="300x250" /></div></Fragment>);
             }

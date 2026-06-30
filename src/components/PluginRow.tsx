@@ -78,7 +78,7 @@ export function PluginRow({ title, items, isLoading = false, viewAllLink }: Plug
           {isLoading
             ? Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
             : items.flatMap((plugin, index) => {
-                const cards: JSX.Element[] = [<PluginCard key={plugin.internalName} plugin={plugin} />];
+                const cards = [<PluginCard key={plugin.internalName} plugin={plugin} />];
                 if ((index + 1) % 6 === 0 && index + 1 < items.length) {
                   cards.push(<Fragment key={`ad-plugin-${index}`}><div className="flex-shrink-0 w-[300px]"><AdBanner type="300x250" /></div></Fragment>);
                 }
