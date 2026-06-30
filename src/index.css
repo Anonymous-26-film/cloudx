@@ -163,3 +163,25 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+/* ── Adsterra Ad Containers ── */
+.adsterra-banner {
+  max-width: 100% !important;
+  overflow: hidden !important;
+}
+.adsterra-banner iframe,
+.adsterra-banner img,
+.adsterra-banner div {
+  max-width: 100% !important;
+}
+
+/* Native banner responsive */
+[id^="container-"] {
+  max-width: 100%;
+  overflow: hidden;
+}
+[id^="container-"] iframe,
+[id^="container-"] img,
+[id^="container-"] div {
+  max-width: 100% !important;
+}
