@@ -5,7 +5,6 @@ import { Helmet } from "react-helmet-async";
 import { OgMeta } from "../components/OgMeta";
 import {
   Star,
-  Clock,
   Play,
   ArrowLeft,
   Users,
@@ -24,7 +23,6 @@ import {
   formatRating,
   formatRuntime,
   formatDate,
-  formatNumber,
   truncateText,
 } from "../utils/helpers";
 import type { Cast, Crew, Genre, Movie, TVShow, TMDBResponse } from "../types";
@@ -158,7 +156,6 @@ export function DetailFilmPage() {
   const releaseDate = getReleaseDate(film as any);
   const posterUrl = IMAGE_URL(film.poster_path, "w500");
   const backdropUrl = BACKDROP_URL(film.backdrop_path);
-  const rating = formatRating(film.vote_average);
   const runtime =
     mediaType === "movie"
       ? film.runtime
@@ -212,12 +209,6 @@ export function DetailFilmPage() {
     genreText,
     runtime && formatRuntime(runtime),
   ].filter(Boolean).join(" \u2022 ");
-
-  const handlePlayTrailer = () => {
-    if (videos.length > 0) {
-      setActiveTrailerKey(videos[0].key);
-    }
-  };
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
   const shareTitle = encodeURIComponent(title);
