@@ -84,9 +84,9 @@ export function MovieCard({ item, mediaType = "movie" }: MovieCardProps) {
         </div>
 
         {/* Title row */}
-        <div className="mt-2 px-0.5">
+        <div className="mt-4 px-1">
           <p className="text-[13px] sm:text-sm font-medium text-foreground line-clamp-2 leading-tight">{title}</p>
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5">{year}</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">{year}</p>
         </div>
       </Link>
     </motion.div>

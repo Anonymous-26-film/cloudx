@@ -90,7 +90,7 @@ export function HeroBanner({ items, isLoading = false, mediaType = "movie" }: He
               {description && (
                 <p className="text-sm sm:text-base text-foreground/80 leading-relaxed mb-6 line-clamp-3">{description}</p>
               )}
-              <div className="flex flex-wrap gap-3">
+              <div className="hidden sm:flex flex-wrap gap-3">
                 <Link
                   to={`/hub?play=${current.id}&type=${resolvedType}`}
                   className="flex items-center gap-2 bg-white text-black font-bold px-6 py-2.5 rounded-md hover:bg-white/90 transition-colors text-sm sm:text-base"
