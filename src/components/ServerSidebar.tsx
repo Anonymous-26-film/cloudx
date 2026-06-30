@@ -40,23 +40,17 @@ export function ServerSidebar({
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onToggle}
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* Sidebar — fixed, slide animation */}
       <aside
-        className={`fixed lg:sticky top-16 left-0 z-40 h-[calc(100vh-4rem)]
-          w-72 bg-background border-r border-border/50
-          transition-transform duration-300 flex flex-col
-          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0 lg:w-72 lg:min-w-72"}`}
+        className="fixed top-0 left-0 z-40 h-full bg-background border-r border-border/50 flex flex-col overflow-hidden shadow-2xl"
+        style={{
+          width: 260,
+          transform: isOpen ? "translateX(0)" : "translateX(-100%)",
+          transition: "transform 0.3s ease",
+        }}
       >
         {/* Header */}
-        <div className="p-3 border-b border-border/40 flex items-center justify-between">
+        <div className="p-3 border-b border-border/40 flex items-center justify-between" style={{ paddingTop: "calc(1rem + 64px)" }}>
           <div className="flex items-center gap-2">
             <Server className="w-4 h-4 text-primary" />
             <h2 className="text-sm font-bold text-foreground">Servers</h2>
@@ -66,13 +60,13 @@ export function ServerSidebar({
           </div>
           <button
             onClick={onToggle}
-            className="lg:hidden p-1.5 rounded-md hover:bg-secondary text-muted-foreground"
+            className="p-1.5 rounded-md hover:bg-secondary text-muted-foreground"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Search within sidebar */}
+        {/* Search */}
         <div className="p-2 border-b border-border/30">
           <div className="flex items-center bg-secondary/50 rounded-md border border-border/40 px-2">
             <input
@@ -111,7 +105,6 @@ export function ServerSidebar({
                       : "hover:bg-secondary/50 border border-transparent"
                   }`}
                 >
-                  {/* Status indicator */}
                   <div className="flex-shrink-0">
                     <div
                       className={`w-2 h-2 rounded-full ${
@@ -122,7 +115,6 @@ export function ServerSidebar({
                     />
                   </div>
 
-                  {/* Icon */}
                   <div className="w-8 h-8 rounded-lg overflow-hidden bg-background border border-border/30 flex items-center justify-center flex-shrink-0">
                     {plugin.iconUrl && !imgErrors.has(plugin.internalName) ? (
                       <img
@@ -136,7 +128,6 @@ export function ServerSidebar({
                     )}
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <p className={`text-xs font-medium line-clamp-1 ${
                       isSelected ? "text-primary" : "text-foreground"
@@ -167,7 +158,7 @@ export function ServerSidebar({
           </div>
         </div>
 
-        {/* Footer stats */}
+        {/* Footer */}
         <div className="p-2 border-t border-border/30 bg-secondary/20">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
@@ -180,16 +171,6 @@ export function ServerSidebar({
           </div>
         </div>
       </aside>
-
-      {/* Mobile toggle button */}
-      <button
-        onClick={onToggle}
-        className={`fixed bottom-4 left-4 z-30 lg:hidden w-12 h-12 rounded-full bg-primary text-white shadow-lg flex items-center justify-center transition-transform hover:scale-110 ${
-          isOpen ? "hidden" : ""
-        }`}
-      >
-        <Server className="w-5 h-5" />
-      </button>
     </>
   );
 }

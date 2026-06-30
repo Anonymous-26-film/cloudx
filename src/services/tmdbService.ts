@@ -63,6 +63,8 @@ export const movieService = {
     tmdbClient.get<GenresResponse>(ENDPOINTS.MOVIE_GENRES),
   getKeywords: (id: number) =>
     tmdbClient.get<KeywordsResponse>(ENDPOINTS.MOVIE_KEYWORDS(id)),
+  getReleaseDates: (id: number) =>
+    tmdbClient.get<any>(ENDPOINTS.MOVIE_RELEASE_DATES(id)),
   discoverAnime: (page = 1) =>
     tmdbClient.get<TMDBResponse<Movie>>(ENDPOINTS.DISCOVER_MOVIE, {
       params: { page, with_keywords: "210024", sort_by: "popularity.desc", with_original_language: "ja" },
@@ -95,6 +97,8 @@ export const tvService = {
     tmdbClient.get<GenresResponse>(ENDPOINTS.TV_GENRES),
   getKeywords: (id: number) =>
     tmdbClient.get<KeywordsResponse>(ENDPOINTS.TV_KEYWORDS(id)),
+  getContentRatings: (id: number) =>
+    tmdbClient.get<any>(ENDPOINTS.TV_CONTENT_RATINGS(id)),
 };
 
 // ── Search / Trending All ──

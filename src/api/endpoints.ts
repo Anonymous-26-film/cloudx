@@ -51,6 +51,10 @@ export const ENDPOINTS = {
   TV_KEYWORDS: (id: number) => `/tv/${id}/keywords`,
   KEYWORD_DETAIL: (id: number) => `/keyword/${id}`,
 
+  // Certifications
+  MOVIE_RELEASE_DATES: (id: number) => `/movie/${id}/release_dates`,
+  TV_CONTENT_RATINGS: (id: number) => `/tv/${id}/content_ratings`,
+
   // Trending All
   TRENDING_ALL: "/trending/all/week",
 
